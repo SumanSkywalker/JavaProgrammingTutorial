@@ -1,6 +1,6 @@
 package data_structures;
 
-import java.util.ArrayList;
+import java.util.*;
 
 class PerfectBinaryTree {
     static PerfectTreeNode root;
@@ -58,6 +58,23 @@ class PerfectBinaryTree {
         }
         return height;
     }
+
+    void findParents(Hashtable<Integer, Integer> ht, PerfectTreeNode root) {
+        if (root != null) {
+            //System.out.println(root.data); //(pre-order)
+            if (root.left != null) {
+                findParents(ht, root.left);
+            }
+            //System.out.println(root.data); //(in-order)
+            if (root.right != null) {
+                findParents(ht, root.right);
+            }
+            if (root.left != null && root.right != null) {
+                ht.put(root.left.data, root.data);
+                ht.put(root.right.data, root.data);
+            }
+        }
+    }
 }
 
 class PerfectTreeNode {
@@ -73,27 +90,33 @@ class PerfectTreeNode {
 class PerfectTreeSolution {
     public static void main(String[] args) {
         PerfectBinaryTree tree = new PerfectBinaryTree();
-        //Creating a perfect binary tree with nodal value -1.
-        tree.insertNode();
-        tree.insertNode();
-        tree.insertNode();
-        tree.insertNode();
-        tree.insertNode();
-        tree.insertNode();
-        tree.insertNode();
+        //Calculate n - no.of.tree nodes
+        int h = 3;
+        int n = new PerfectTreeSolution().TreeNodesCount(h);
+
+        //Creating a perfect binary tree with n nodes of value -1.
+        for (int i = 0; i < n; i++) tree.insertNode();
 
         //Reassigning the nodal values with given input values using DFS post-order traversal.
-        tree.reassignNode(PerfectBinaryTree.root, 1);
-        tree.reassignNode(PerfectBinaryTree.root, 2);
-        tree.reassignNode(PerfectBinaryTree.root, 3);
-        tree.reassignNode(PerfectBinaryTree.root, 4);
-        tree.reassignNode(PerfectBinaryTree.root, 5);
-        tree.reassignNode(PerfectBinaryTree.root, 6);
-        tree.reassignNode(PerfectBinaryTree.root, 7);
+        for (int i = 1; i <= n; i++) tree.reassignNode(PerfectBinaryTree.root, i);
+
+        //Printing the elements of the tree.
         tree.printTree(PerfectBinaryTree.root);
 
-        //Determining the Tree Height
+        //Creating an HashTable with node as keys and parent values
+        Hashtable<Integer, Integer> ht = new Hashtable<>();
+        tree.findParents(ht, PerfectBinaryTree.root);
+        ht.put(n, -1);
+
+        //Determining the Tree Height.
         System.out.println("Tree Height: " + tree.treeHeight(PerfectBinaryTree.root, 0));
     }
-}
 
+    private int TreeNodesCount(int h) {
+        int height = 1;
+        for (int i = 1; i < h; i++) {
+            height = (height*2) + 1;
+        }
+        return height;
+    }
+}
